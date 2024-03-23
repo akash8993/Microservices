@@ -25,7 +25,9 @@ public class EmployeeService {
     //for calling to department service
    // private RestTemplate restTemplate;
 
-    private WebClient webClient;
+   // private WebClient webClient;
+
+    private ApiClient apiClient;
 
     public EmployeeDto saveEmployee(EmployeeDto employeeDto)
     {
@@ -44,13 +46,14 @@ public class EmployeeService {
 //        , DepartmentDto.class);
 //        DepartmentDto departmentDto= responseEntity.getBody();
 
-        DepartmentDto departmentDto= webClient.get().
-                uri("http://localhost:8080/api/departments/getDepartment/"+
-                        employee.getDepartmentCode())
-                .retrieve()
-                .bodyToMono(DepartmentDto.class)
-                .block();
+//        DepartmentDto departmentDto= webClient.get().
+//                uri("http://localhost:8080/api/departments/getDepartment/"+
+//                        employee.getDepartmentCode())
+//                .retrieve()
+//                .bodyToMono(DepartmentDto.class)
+//                .block();
 
+DepartmentDto departmentDto=apiClient.getDepartmentByCode(employee.getDepartmentCode());
 
         EmployeeDto employeeDto= modelMapper.map(employee, EmployeeDto.class);
         APIResponseDto apiResponseDto= new APIResponseDto();
