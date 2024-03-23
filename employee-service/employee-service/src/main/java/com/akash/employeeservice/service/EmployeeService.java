@@ -1,12 +1,16 @@
 package com.akash.employeeservice.service;
 
+import com.akash.employeeservice.dto.APIResponseDto;
+import com.akash.employeeservice.dto.DepartmentDto;
 import com.akash.employeeservice.dto.EmployeeDto;
 import com.akash.employeeservice.entity.Employee;
 import com.akash.employeeservice.repository.EmployeeRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @AllArgsConstructor
@@ -16,6 +20,10 @@ public class EmployeeService {
     private EmployeeRepository employeeRepository;
 
     private ModelMapper modelMapper;
+
+    //for calling to department service
+    private RestTemplate restTemplate;
+
     public EmployeeDto saveEmployee(EmployeeDto employeeDto)
     {
         Employee employee= modelMapper.map(employeeDto, Employee.class);
@@ -23,9 +31,22 @@ public class EmployeeService {
        return modelMapper.map(savedEmployee, EmployeeDto.class);
     }
 
-    public EmployeeDto findEmployeeById(Long id) {
+    public APIResponseDto findEmployeeById(Long id) {
         Employee employee= employeeRepository.findById(id).get();
-        return modelMapper.map(employee, EmployeeDto.class);
+
+        //Here we have created the Rest Template Call for the department data
+        ResponseEntity<DepartmentDto> responseEntity=restTemplate
+                .getForEntity("http://localhost:8080/api/departments/getDepartment/"+
+                        employee.getDepartmentCode()
+        , DepartmentDto.class);
+        DepartmentDto departmentDto= responseEntity.getBody();
+
+        EmployeeDto employeeDto= modelMapper.map(employee, EmployeeDto.class);
+        APIResponseDto apiResponseDto= new APIResponseDto();
+        apiResponseDto.setEmployeeDto(employeeDto);
+        apiResponseDto.setDepartmentDto(departmentDto);
+
+        return apiResponseDto;
 
     }
 }

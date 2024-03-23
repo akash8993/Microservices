@@ -1,5 +1,6 @@
 package com.akash.employeeservice.controller;
 
+import com.akash.employeeservice.dto.APIResponseDto;
 import com.akash.employeeservice.dto.EmployeeDto;
 import com.akash.employeeservice.service.EmployeeService;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<EmployeeDto> getEmployeeById(@PathVariable Long id)
+    public ResponseEntity<APIResponseDto> getEmployeeById(@PathVariable Long id)
     {
         return new ResponseEntity<>(employeeService.findEmployeeById(id), HttpStatus.OK);
     }
