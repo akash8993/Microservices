@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @AllArgsConstructor
@@ -22,7 +23,9 @@ public class EmployeeService {
     private ModelMapper modelMapper;
 
     //for calling to department service
-    private RestTemplate restTemplate;
+   // private RestTemplate restTemplate;
+
+    private WebClient webClient;
 
     public EmployeeDto saveEmployee(EmployeeDto employeeDto)
     {
@@ -35,11 +38,19 @@ public class EmployeeService {
         Employee employee= employeeRepository.findById(id).get();
 
         //Here we have created the Rest Template Call for the department data
-        ResponseEntity<DepartmentDto> responseEntity=restTemplate
-                .getForEntity("http://localhost:8080/api/departments/getDepartment/"+
-                        employee.getDepartmentCode()
-        , DepartmentDto.class);
-        DepartmentDto departmentDto= responseEntity.getBody();
+//        ResponseEntity<DepartmentDto> responseEntity=restTemplate
+//                .getForEntity("http://localhost:8080/api/departments/getDepartment/"+
+//                        employee.getDepartmentCode()
+//        , DepartmentDto.class);
+//        DepartmentDto departmentDto= responseEntity.getBody();
+
+        DepartmentDto departmentDto= webClient.get().
+                uri("http://localhost:8080/api/departments/getDepartment/"+
+                        employee.getDepartmentCode())
+                .retrieve()
+                .bodyToMono(DepartmentDto.class)
+                .block();
+
 
         EmployeeDto employeeDto= modelMapper.map(employee, EmployeeDto.class);
         APIResponseDto apiResponseDto= new APIResponseDto();
