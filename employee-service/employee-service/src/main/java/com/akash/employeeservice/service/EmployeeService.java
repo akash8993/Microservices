@@ -5,6 +5,7 @@ import com.akash.employeeservice.dto.DepartmentDto;
 import com.akash.employeeservice.dto.EmployeeDto;
 import com.akash.employeeservice.entity.Employee;
 import com.akash.employeeservice.repository.EmployeeRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ public class EmployeeService {
        return modelMapper.map(savedEmployee, EmployeeDto.class);
     }
 
+    @CircuitBreaker(name="${spring.application.name}", fallbackMethod = "getDefaultDepartment")
     public APIResponseDto findEmployeeById(Long id) {
         Employee employee= employeeRepository.findById(id).get();
 
@@ -62,5 +64,21 @@ public class EmployeeService {
 
         return apiResponseDto;
 
+    }
+
+    public APIResponseDto getDefaultDepartment(Long id){
+        Employee employee= employeeRepository.findById(id).get();
+
+        DepartmentDto departmentDto= new DepartmentDto();
+        departmentDto.setDepartmentCode("RD0001");
+        departmentDto.setDepartmentName("R&D Department");
+        departmentDto.setDepartmentDescription("Research and development department");
+
+        EmployeeDto employeeDto= modelMapper.map(employee, EmployeeDto.class);
+        APIResponseDto apiResponseDto= new APIResponseDto();
+        apiResponseDto.setEmployeeDto(employeeDto);
+        apiResponseDto.setDepartmentDto(departmentDto);
+
+        return apiResponseDto;
     }
 }
