@@ -6,8 +6,11 @@ import com.akash.employeeservice.dto.EmployeeDto;
 import com.akash.employeeservice.entity.Employee;
 import com.akash.employeeservice.repository.EmployeeRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @AllArgsConstructor
 public class EmployeeService {
 
+    private static final Logger logger= LoggerFactory.getLogger(EmployeeService.class);
     @Autowired
     private EmployeeRepository employeeRepository;
 
@@ -38,7 +42,9 @@ public class EmployeeService {
     }
 
     @CircuitBreaker(name="${spring.application.name}", fallbackMethod = "getDefaultDepartment")
+  // @Retry(name="${spring.application.name}", fallbackMethod = "getDefaultDepartment")
     public APIResponseDto findEmployeeById(Long id) {
+        logger.info("inside getEmployeeById() method");
         Employee employee= employeeRepository.findById(id).get();
 
         //Here we have created the Rest Template Call for the department data
