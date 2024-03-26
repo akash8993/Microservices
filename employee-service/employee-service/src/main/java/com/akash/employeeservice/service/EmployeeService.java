@@ -3,6 +3,7 @@ package com.akash.employeeservice.service;
 import com.akash.employeeservice.dto.APIResponseDto;
 import com.akash.employeeservice.dto.DepartmentDto;
 import com.akash.employeeservice.dto.EmployeeDto;
+import com.akash.employeeservice.dto.OrganizationDto;
 import com.akash.employeeservice.entity.Employee;
 import com.akash.employeeservice.repository.EmployeeRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -34,6 +35,7 @@ public class EmployeeService {
 
     private ApiClient apiClient;
 
+    private OrganizationClient organizationClient;
     public EmployeeDto saveEmployee(EmployeeDto employeeDto)
     {
         Employee employee= modelMapper.map(employeeDto, Employee.class);
@@ -63,10 +65,13 @@ public class EmployeeService {
 
        DepartmentDto departmentDto=apiClient.getDepartmentByCode(employee.getDepartmentCode());
 
+       OrganizationDto organizationDto= organizationClient.getOrganizationByCode(employee.getOrganizationCode());
+
         EmployeeDto employeeDto= modelMapper.map(employee, EmployeeDto.class);
         APIResponseDto apiResponseDto= new APIResponseDto();
         apiResponseDto.setEmployeeDto(employeeDto);
         apiResponseDto.setDepartmentDto(departmentDto);
+        apiResponseDto.setOrganizationDto(organizationDto);
 
         return apiResponseDto;
 

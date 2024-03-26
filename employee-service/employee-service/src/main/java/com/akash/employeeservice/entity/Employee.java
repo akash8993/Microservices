@@ -22,4 +22,7 @@ public class Employee {
     //Ye departmentCode is for calling the departmentService
     private String departmentCode;
 
+    //Ye for OrganizationCode is for calling the organization service
+    private String organizationCode;
+
 }

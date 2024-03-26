@@ -20,4 +20,8 @@ public class EmployeeDto {
     //Ye departmentCode is for calling the departmentService and humne dto mein bhi add kri
     //bcoz ye hi return krenge hum
     private String departmentCode;
+
+    //Ye departmentCode is for calling the OrganizationService and humne dto mein bhi add kri
+    //bcoz ye hi return krenge hum
+    private String organizationCode;
 }
